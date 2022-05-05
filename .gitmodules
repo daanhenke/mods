@@ -1,0 +1,3 @@
+[submodule "extern/zasm"]
+	path = extern/zasm
+	url = https://github.com/ZehMatt/zasm

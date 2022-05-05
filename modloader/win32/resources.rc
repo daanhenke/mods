@@ -1,0 +1,5 @@
+
+#pragma code_page(65001)  // UTF-8
+#include "win32/resources.hh"
+
+IDI_MAIN_ICON   ICON    "icon.ico"

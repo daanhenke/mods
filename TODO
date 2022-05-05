@@ -1,0 +1,12 @@
+modloader:
+  win32:
+    - Taskbar icon
+    - LoadLibrary injector
+  unix:
+    - Everyting
+libmod:
+  - vtable hook
+  - trampoline hook
+  - dx11 hook
+  - imgui dx11 hook
+
