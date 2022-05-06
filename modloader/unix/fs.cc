@@ -3,7 +3,6 @@
 #include <sstream>
 #include <string>
 #include <vector>
-#include <iostream>
 
 using namespace std::filesystem;
 
@@ -16,7 +15,6 @@ namespace modloader
         {
             // Construct full path
             auto potential_path = entry / partial_name;
-            std::cout << "looking for " << potential_path << std::endl;
 
             // Awesome, now find the highest number so we can find libc.so.6 for example
             if (exists(potential_path))

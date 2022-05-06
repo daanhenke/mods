@@ -17,10 +17,9 @@ namespace modloader
         elf64 libc_elf(libc_path);
         if (! libc_elf.is_valid()) return false;
 
-        auto fuckyou =  libc_elf.get_export_offset("__libc_dlopen_mode");
+        auto fuckyou = get_base(pid) + libc_elf.get_export_offset("__libc_dlopen_mode");
 
         std::cout << "cool: " << std::hex << fuckyou << std::endl;
-        // auto remote = translate_pointer(pid, local);
 
         return false;
     }

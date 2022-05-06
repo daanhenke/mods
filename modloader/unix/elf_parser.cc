@@ -1,6 +1,5 @@
 #include <unix/elf_parser.hh>
 #include <cstring>
-#include <iostream>
 
 namespace modloader
 {
@@ -52,9 +51,10 @@ namespace modloader
 
                     if (sym_name == export_name)
                     {
+                        auto value = sym.st_value;
                         delete sym_section;
                         delete text_section;
-                        return sym.st_value;
+                        return value;
                     }
                 }
 
