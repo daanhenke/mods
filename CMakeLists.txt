@@ -18,7 +18,7 @@ add_subdirectory(extern/mini)
 add_subdirectory(modloader)
 add_subdirectory(libmod)
 
-message(STATUS "Current platform: ${CMAKE_SIZEOF_VOID_P}")
+add_subdirectory(example-mod)
 
 # Windows 64 bit only targets
 if(WIN32)
