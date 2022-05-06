@@ -17,6 +17,8 @@ elseif(UNIX)
         unix/main.cc
         unix/processapi.cc
         unix/inject.cc
+        unix/fs.cc
+        unix/elf_parser.cc
         stdout_ui.cc
     )
 else()
