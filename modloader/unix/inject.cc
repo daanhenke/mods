@@ -2,8 +2,8 @@
 #include <unix/processapi_ext.hh>
 #include <unix/elf_parser.hh>
 #include <unix/fs.hh>
+#include <dlfcn.h>
 #include <iostream>
-
 #include <cstring>
 
 using namespace std::filesystem;
@@ -34,6 +34,7 @@ namespace modloader
         auto p_free = p_base + libc_elf.get_export_offset("free");
         auto p_mmap = p_base + libc_elf.get_export_offset("mmap");
         auto p_munmap = p_base + libc_elf.get_export_offset("munmap");
+        auto p_puts = p_base + libc_elf.get_export_offset("puts");
 
         print_ptrs(p_base, p_dlopen, p_malloc, p_free, p_mmap, p_munmap);
 
@@ -41,17 +42,25 @@ namespace modloader
         auto ptrace = ptrace_wrapper(pid, p_mmap, p_munmap);
         if (ptrace.has_errored()) return false;
 
-        auto remote_argument = ptrace.execute_function(p_malloc, 0x1337);
+        auto remote_argument = ptrace.execute_function(p_malloc, dll_path.string().size()+1);
 
-        std::cout << "yeeting memory..." << std::endl << std::flush;
+        ptrace.write_to(remote_argument, dll_path.string().size()+1, (char*)dll_path.string().c_str());
 
-        char yeet_in[] = "enge zaken en memecopy spooky";
-        ptrace.write_to(ptrace.m_shellcode_address, strlen(yeet_in), yeet_in);
+        std::cout << "EWA: " << std::hex << ptrace.execute_function(p_dlopen, remote_argument, RTLD_LAZY) << std::endl << std::flush;
 
-        char yeet_out[1024] = {'A'};
-        ptrace.read_from(ptrace.m_shellcode_address, strlen(yeet_in), yeet_out);
 
-        std::cout << yeet_out << std::endl << std::flush;
+        // ptrace.execute_function(p_puts, remote_argument);
+
+
+        // std::cout << "yeeting memory..." << std::endl << std::flush;
+        //
+        // char yeet_in[] = "enge zaken en memecopy spooky 2";
+        // ptrace.write_to(ptrace.m_shellcode_address, strlen(yeet_in), yeet_in);
+        //
+        // char yeet_out[1024] = {'A'};
+        // ptrace.read_from(ptrace.m_shellcode_address, strlen(yeet_in), yeet_out);
+        //
+        // std::cout << yeet_out << std::endl << std::flush;
 
         return false;
     }

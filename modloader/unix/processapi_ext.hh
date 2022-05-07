@@ -23,7 +23,7 @@ namespace modloader
         void read_from(std::uintptr_t address, int size, char* out_buffer);
 
         std::uintptr_t execute_single_syscall(std::uintptr_t address, std::uintptr_t arg1 = 0, std::uintptr_t arg2 = 0, std::uintptr_t arg3 = 0, std::uintptr_t arg4 = 0, std::uintptr_t arg5 = 0, std::uintptr_t arg6 = 0);
-        std::uintptr_t execute_function(std::uintptr_t address, std::uintptr_t arg1); // maybe more args idk, need 1 for dlopen free and malloc
+        std::uintptr_t execute_function(std::uintptr_t address, std::uintptr_t arg1 = 0, std::uintptr_t arg2 = 0); // maybe more args idk, need 1 for dlopen free and malloc
 
         std::uintptr_t m_shellcode_address;
     protected:

@@ -127,6 +127,12 @@ namespace modloader
         m_shellcode_size = serializer.getCodeSize();
         m_shellcode_address = execute_single_syscall(p_mmap, 0, m_shellcode_size, PROT_READ | PROT_WRITE | PROT_EXEC, MAP_PRIVATE | MAP_ANONYMOUS, -1, 0);
         m_has_errored = false;
+
+        if(write_to(m_shellcode_address, m_shellcode_size, (char*)serializer.getCode())) {
+            std::cout << "dingen gedaan" << std::endl;
+        } else {
+            std::cout << "geen dingen gedaan" << std::endl;
+        }
     }
 
     std::uintptr_t ptrace_wrapper::execute_single_syscall(std::uintptr_t address, std::uintptr_t arg1, std::uintptr_t arg2, std::uintptr_t arg3, std::uintptr_t arg4, std::uintptr_t arg5, std::uintptr_t arg6)
@@ -181,10 +187,26 @@ namespace modloader
         }
     }
 
-    std::uintptr_t ptrace_wrapper::execute_function(std::uintptr_t address, std::uintptr_t arg1)
+    std::uintptr_t ptrace_wrapper::execute_function(std::uintptr_t address, std::uintptr_t arg1, std::uintptr_t arg2)
     {
+        m_regs.rip = m_shellcode_address;
+        m_regs.rax = address;
+        m_regs.rdi = arg1;
+        m_regs.rsi = arg2;
+        // m_regs.rdx = arg3;
+        // m_regs.rcx = arg4;
+        // m_regs.r8 = arg5;
+        // m_regs.r9 = arg6;
 
-        return 0;
+        // Copy instruction pointer and arguments to target process
+        if (! ptrace_succeeded(ptrace(PTRACE_SETREGS, m_pid, nullptr, &m_regs))) return 0;
+        // Continue until trap is hit
+        if (! ptrace_succeeded(ptrace(PTRACE_CONT, m_pid, nullptr, nullptr))) return 0;
+        // Wait until other process is halted
+        if (! wait(m_pid)) return 0;
+
+        if (! ptrace_succeeded(ptrace(PTRACE_GETREGS, m_pid, nullptr, &m_regs))) return 0;
+        return m_regs.rax;
     }
 
     bool ptrace_wrapper::has_errored()
