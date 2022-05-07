@@ -4,6 +4,8 @@
 #include <sys/ptrace.h>
 #include <sys/wait.h>
 
+#include <zasm/zasm.hpp>
+
 #include <iostream>
 
 #define ptrace_succeeded(status_code) (status_code != -1)
@@ -108,8 +110,20 @@ namespace modloader
         // Second call could / should be a memcpy
         if (! ptrace_succeeded(ptrace(PTRACE_GETREGS, m_pid, nullptr, &m_regs))) return;
 
+        // Generate shellcode
+        zasm::Program program(ZydisMachineMode::ZYDIS_MACHINE_MODE_LONG_64);
+        zasm::Assembler assembler(program);
+
+        using namespace zasm::operands;
+        assembler.call(rax);
+        assembler.int3();
+
+        zasm::Serializer serializer;
+        serializer.serialize(program, 0);
+
+
         // Allocate some memory to place shellcode
-        m_shellcode_size = 0x420;
+        m_shellcode_size = serializer.getCodeSize();
         m_shellcode_address = execute_single_syscall(p_mmap, 0, m_shellcode_size, PROT_READ | PROT_WRITE | PROT_EXEC, MAP_PRIVATE | MAP_ANONYMOUS, -1, 0);
         m_has_errored = false;
     }

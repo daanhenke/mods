@@ -20,8 +20,11 @@ add_subdirectory(libmod)
 
 add_subdirectory(example-mod)
 
-# Windows 64 bit only targets
+# Windows onlu
 if(WIN32)
+    add_subdirectory(2bshell)
+
+    # 64 bit only
     if("${CMAKE_SIZEOF_VOID_P}" STREQUAL "8")
         add_subdirectory(nierautomata)
     endif()

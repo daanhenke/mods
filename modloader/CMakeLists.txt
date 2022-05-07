@@ -34,5 +34,9 @@ add_executable(modloader ${EXECUTABLE_TYPE}
 target_include_directories(modloader PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
 target_link_libraries(modloader mini)
 
+if(UNIX)
+    target_link_libraries(modloader zasm)
+endif()
+
 install(TARGETS modloader DESTINATION bin)
 install(FILES config.ini DESTINATION bin)
