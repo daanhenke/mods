@@ -19,12 +19,13 @@ namespace modloader
 
         bool has_errored();
 
-        void write_to(std::uintptr_t address, int size);
-        void read_from(std::uintptr_t address, int size, void* out_buffer);
+        bool write_to(std::uintptr_t address, int size, char* in_buffer);
+        void read_from(std::uintptr_t address, int size, char* out_buffer);
 
         std::uintptr_t execute_single_syscall(std::uintptr_t address, std::uintptr_t arg1 = 0, std::uintptr_t arg2 = 0, std::uintptr_t arg3 = 0, std::uintptr_t arg4 = 0, std::uintptr_t arg5 = 0, std::uintptr_t arg6 = 0);
         std::uintptr_t execute_function(std::uintptr_t address, std::uintptr_t arg1); // maybe more args idk, need 1 for dlopen free and malloc
 
+        std::uintptr_t m_shellcode_address;
     protected:
         bool m_has_errored;
 
@@ -33,7 +34,6 @@ namespace modloader
         std::uintptr_t m_p_mmap;
         std::uintptr_t m_p_munmap;
 
-        std::uintptr_t m_shellcode_address;
         int m_shellcode_size;
 
         struct user_regs_struct m_regs;

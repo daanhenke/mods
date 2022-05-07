@@ -4,6 +4,8 @@
 #include <unix/fs.hh>
 #include <iostream>
 
+#include <cstring>
+
 using namespace std::filesystem;
 
 namespace modloader
@@ -40,6 +42,16 @@ namespace modloader
         if (ptrace.has_errored()) return false;
 
         auto remote_argument = ptrace.execute_function(p_malloc, 0x1337);
+
+        std::cout << "yeeting memory..." << std::endl << std::flush;
+
+        char yeet_in[] = "enge zaken en memecopy spooky";
+        ptrace.write_to(ptrace.m_shellcode_address, strlen(yeet_in), yeet_in);
+
+        char yeet_out[1024] = {'A'};
+        ptrace.read_from(ptrace.m_shellcode_address, strlen(yeet_in), yeet_out);
+
+        std::cout << yeet_out << std::endl << std::flush;
 
         return false;
     }

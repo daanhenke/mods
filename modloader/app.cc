@@ -40,7 +40,7 @@ namespace modloader::app
                 {
                     // Check if mod is actually an executable / injectable file
                     if (! is_injectable_file(file)) continue;
-
+                    
                     // Check if this process has a cache, if not create it
                     if (ctx.pid_mod_time_map.find(proc.pid) == ctx.pid_mod_time_map.end())
                     {

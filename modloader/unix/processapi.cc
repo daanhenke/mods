@@ -3,6 +3,7 @@
 #include <sys/mman.h>
 #include <sys/ptrace.h>
 #include <sys/wait.h>
+#include <cstring>
 
 #include <iostream>
 
@@ -141,8 +142,34 @@ namespace modloader
         return m_regs.rax;
     }
 
+    bool ptrace_wrapper::write_to(std::uintptr_t address, int size, char* in_buffer)
+    {
+        size_t start = 0;
+        long tmp;
+        while(start < size)
+        {
+            memcpy(&tmp, in_buffer+start, sizeof(tmp));
+            if (! ptrace_succeeded(ptrace(PTRACE_POKETEXT, m_pid, (address + start), tmp))) return false;
+            start+=sizeof(tmp);
+        }
+        return true;
+    }
+
+    void ptrace_wrapper::read_from(std::uintptr_t address, int size, char* out_buffer)
+    {
+        size_t start = 0;
+        long tmp;
+        while(start < size)
+        {
+            tmp = ptrace(PTRACE_PEEKTEXT, m_pid, address + start, 0);
+            memcpy(out_buffer + start, &tmp, sizeof(tmp));
+            start+=sizeof(tmp);
+        }
+    }
+
     std::uintptr_t ptrace_wrapper::execute_function(std::uintptr_t address, std::uintptr_t arg1)
     {
+
         return 0;
     }
 
